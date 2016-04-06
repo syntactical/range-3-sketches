@@ -57,18 +57,17 @@ void loop()  {
   if (currentMillis - previousMillis >= delayTime) {
     previousMillis = currentMillis;
 
-    
-    for (int i=0; i<=LENGTH_OF_TAIL; i++)  {
-      for (int link = 0; link < LINKS; link++) {
+    for (int link = 0; link < LINKS; link++) {
+      for (int i=0; i<=LENGTH_OF_TAIL; i++)  {
         float attenuation = i * (256 / LENGTH_OF_TAIL);
         int scale = clamp(int(256 - attenuation), 0, 255);
-        int target = (LEDS_PER_LINK + brightestPixels[link] - i) % LEDS_PER_LINK;
+        int target = (LEDS_PER_LINK + brightestPixels[link] - i) % ledsPerStrip;
         leds.setPixel(target, leds.color(scale, scale, scale));
-
-        brightestPixels[link] = (brightestPixels[link] + 1) % LEDS_PER_LINK;
       }
    
       leds.show();
+      
+      brightestPixels[link] = (brightestPixels[link] + 1) % ledsPerStrip;
     }
   }
 }
