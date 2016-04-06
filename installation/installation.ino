@@ -18,6 +18,7 @@ OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config);
 
 int analogPin = A9;
 int brightestPixels[LINKS];
+float attenuations[LENGTH_OF_TAIL+1];
 
 unsigned long previousMillis = 0;
 unsigned long interval;
@@ -39,6 +40,12 @@ void setup()
 
   brightestPixels[0] = 0;
 
+  for (int i=0; i<=LENGTH_OF_TAIL; i++)  {
+    float attenuation = i * (256 / LENGTH_OF_TAIL);
+    int scale = clamp(int(256 - attenuation), 0, 255);
+    attenuations[i] = scale;
+  }
+
   for (int link = 1; link < LINKS; link++) {
     brightestPixels[link] = brightestPixels[link-1] + LEDS_PER_LINK;
   }
@@ -59,10 +66,8 @@ void loop()  {
 
     for (int link = 0; link < LINKS; link++) {
       for (int i=0; i<=LENGTH_OF_TAIL; i++)  {
-        float attenuation = i * (256 / LENGTH_OF_TAIL);
-        int scale = clamp(int(256 - attenuation), 0, 255);
         int target = (LEDS_PER_LINK + brightestPixels[link] - i) % ledsPerStrip;
-        leds.setPixel(target, leds.color(scale, scale, scale));
+        leds.setPixel(target, leds.color(attenuations[i], attenuations[i], attenuations[i]));
       }
    
       leds.show();
