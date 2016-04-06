@@ -1,8 +1,5 @@
-#define BLUE   0x0000FF
-#define BLACK  0x000000
-
 #define LENGTH_OF_TAIL 4
-#define LINKS 8
+#define LINKS 6
 #define LEDS_PER_LINK 150
 
 #include <OctoWS2811.h>
@@ -30,9 +27,9 @@ int pixelsPerStrip;
 
 void setup()
 {                
-//  Serial.begin(38400);
+  Serial.begin(38400);
 
-  minDelay = 30;
+  minDelay = 2;
   maxDelay = 2000;
 
   leds.begin();
@@ -55,13 +52,11 @@ void loop()  {
   int sensorValue = analogRead(analogPin);
   long delayTime = long(clamp((20000/clamp(sensorValue-50,1,1023)/3), minDelay, maxDelay));
 
-//  Serial.print(sensorValue);
-//  Serial.print("\t");
-//  Serial.println(clamp(sensorValue-50,1,1023)/3);
-//  
   unsigned long currentMillis = millis();
 
+  
   if (currentMillis - previousMillis >= delayTime) {
+    Serial.println(currentMillis - previousMillis);
     previousMillis = currentMillis;
 
     for (int link = 0; link < LINKS; link++) {
