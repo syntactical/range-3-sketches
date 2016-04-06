@@ -2,9 +2,12 @@
 #define BLACK  0x000000
 
 #define LENGTH_OF_TAIL 4
+#define LINKS 2
+#define LEDS_PER_LINK 150
+
 #include <OctoWS2811.h>
 
-const int ledsPerStrip = 300;
+const int ledsPerStrip = LINKS * LEDS_PER_LINK;
 
 DMAMEM int displayMemory[ledsPerStrip*6];
 int drawingMemory[ledsPerStrip*6];
@@ -14,7 +17,7 @@ const int config = WS2811_GRB | WS2811_800kHz;
 OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config);
 
 int analogPin = A9;
-int brightestPixel;
+int brightestPixels[LINKS];
 
 unsigned long previousMillis = 0;
 unsigned long interval;
@@ -34,7 +37,11 @@ void setup()
   leds.begin();
   leds.show();
 
-  brightestPixel = 0;
+  brightestPixels[0] = 0;
+
+  for (int link = 1; link < LINKS; link++) {
+    brightestPixels[link] = brightestPixels[link-1] + LEDS_PER_LINK;
+  }
 }
 
 void loop()  {
@@ -49,15 +56,20 @@ void loop()  {
 
   if (currentMillis - previousMillis >= delayTime) {
     previousMillis = currentMillis;
-      for (int i=0; i<=LENGTH_OF_TAIL; i++)  {
+
+    
+    for (int i=0; i<=LENGTH_OF_TAIL; i++)  {
+      for (int link = 0; link < LINKS; link++) {
         float attenuation = i * (256 / LENGTH_OF_TAIL);
         int scale = clamp(int(256 - attenuation), 0, 255);
-        int target = (ledsPerStrip + brightestPixel - i) % ledsPerStrip;
+        int target = (LEDS_PER_LINK + brightestPixels[link] - i) % LEDS_PER_LINK;
         leds.setPixel(target, leds.color(scale, scale, scale));
+
+        brightestPixels[link] = (brightestPixels[link] + 1) % LEDS_PER_LINK;
       }
    
       leds.show();
-      brightestPixel = (brightestPixel + 1) % ledsPerStrip;
+    }
   }
 }
 
