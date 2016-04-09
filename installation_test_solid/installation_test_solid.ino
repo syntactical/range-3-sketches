@@ -2,9 +2,13 @@
 #define LINKS_PER_STRIP 6
 #define LEDS_PER_LINK 150
 
+#define RED 0xFF0000
+#define YELLOW 0xFF0000
+#define BLUE 0x0000FF
+
 #include <OctoWS2811.h>
 
-const int ledsPerStrip = LINKS_PER_STRIP * LEDS_PER_LINK;
+const int ledsPerStrip = 900;
 const int totalLinks = LINKS_PER_STRIP * 8;
 const int totalLeds = totalLinks * LEDS_PER_LINK;
 
@@ -52,7 +56,7 @@ void setup()  {
 void loop()  {
   int sensorValue = analogRead(analogPin);
 //  long delayTime = long(clamp((20000/clamp(sensorValue-50,1,1023)/3), minDelay, maxDelay));
-  long delayTime = long(clamp((20000/clamp(sensorValue-50,1,1023)/3), minDelay, maxDelay));
+  long delayTime = 20; 
 
   unsigned long currentMillis = millis();
   
