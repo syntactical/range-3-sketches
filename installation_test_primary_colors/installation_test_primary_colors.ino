@@ -1,80 +1,40 @@
-#define LENGTH_OF_TAIL 4
-#define LINKS_PER_STRIP 6
-#define LEDS_PER_LINK 150
-
-#define RED 0xFF0000
-#define YELLOW 0xFF0000
-#define BLUE 0x0000FF
-
 #include <OctoWS2811.h>
 
+const int red = 0xFF0000;
+const int yellow = 0xFFFF00;
+const int blue = 0x0000FF;
+
 const int ledsPerStrip = 900;
-const int totalLinks = LINKS_PER_STRIP * 8;
-const int totalLeds = totalLinks * LEDS_PER_LINK;
+const int totalLeds = 150;
+
+int colorcycle[] = {red, yellow, blue};
 
 DMAMEM int displayMemory[ledsPerStrip*6];
 int drawingMemory[ledsPerStrip*6];
 
 const int config = WS2811_GRB | WS2811_800kHz;
+const int analogPin = A9;
 
 OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config);
-
-int analogPin = A9;
-int brightestPixels[totalLinks];
-float attenuations[LENGTH_OF_TAIL+1];
-
-unsigned long previousMillis = 0;
-unsigned long interval;
-
-float minDelay;
-float maxDelay;
-
-int pixelsPerStrip;
 
 void setup()  {                
   Serial.begin(38400);
 
-  minDelay = 2;
-  maxDelay = 2000;
-
   leds.begin();
   leds.show();
-
-  brightestPixels[0] = 0;
-
-  for (int i=0; i<=LENGTH_OF_TAIL; i++)  {
-    float attenuation = i * (256 / LENGTH_OF_TAIL);
-    int scale = clamp(int(256 - attenuation), 0, 255);
-    attenuations[i] = scale;
-  }
-
-  for (int link = 1; link < totalLinks; link++) {
-    brightestPixels[link] = brightestPixels[link-1] + LEDS_PER_LINK;
-  }
 }
 
 void loop()  {
-  int sensorValue = analogRead(analogPin);
-//  long delayTime = long(clamp((20000/clamp(sensorValue-50,1,1023)/3), minDelay, maxDelay));
-  long delayTime = 20; 
-
-  unsigned long currentMillis = millis();
+  float sensorValue = 50 * (sin(millis() / 2000.0f) + 1);
   
-  if (currentMillis - previousMillis >= delayTime) {
-    Serial.println(currentMillis - previousMillis);
-    previousMillis = currentMillis;
-
-    for (int link = 0; link < totalLinks; link++) {
-      for (int i=0; i<=LENGTH_OF_TAIL; i++)  {
-        int target = (LEDS_PER_LINK + brightestPixels[link] - i) % totalLeds;
-        leds.setPixel(target, leds.color(attenuations[i], attenuations[i], attenuations[i]));
-      }
-
-      brightestPixels[link] = (brightestPixels[link] + 1) % totalLeds;
-    }
-
-    leds.show();
+  for (int i=0; i<=totalLeds; i++)  {
+    int position = i / (totalLeds / (sensorValue));
+    leds.setPixel(i, colorcycle[(position % 3)]);
   }
+
+  leds.show();
+
+  Serial.println(sensorValue);
 }
 
 inline float clamp(float x, float a, float b){
