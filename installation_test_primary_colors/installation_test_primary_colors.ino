@@ -1,12 +1,12 @@
 #include <OctoWS2811.h>
 
-const int red = 0x110000;
-const int yellow = 0xddddff;
+const int red = 0x115533;
+const int yellow = 0x111122;
 const int blue = 0x000000;
 
 const int stripLength = 150;
 const int ledsPerStrip = 900;
-const int totalLeds = 3600;
+const int totalLeds = 7200;
 
 int colorcycle[] = {red, yellow, blue};
 
@@ -26,12 +26,13 @@ void setup()  {
 }
 
 void loop()  {
-  float sensorValue = 50 * (sin(millis() / 2000.0f) + 1);
+  float sensorValue = 50 * (sin(millis() / 4000.0f) + 1);
 //  float sensorValue = analogRead(A9)/10.0f;
   
   for (int i=0; i<=totalLeds; i++)  {
     int position = i / (totalLeds / (sensorValue)) - 50;
     leds.setPixel(transpose(i), colorcycle[(position % 3)]);
+//      leds.setPixel(i,red);
   }
 
   leds.show();
