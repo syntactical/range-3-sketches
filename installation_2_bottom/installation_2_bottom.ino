@@ -29,9 +29,9 @@ void loop()  {
   float sensorValue = 50 * (sin(millis() / 4000.0f) + 1);
 //  float sensorValue = analogRead(A9)/10.0f;
   
-  for (int i=0; i<=totalLeds; i++)  {
+  for (int i=totalLeds; i<=totalLeds*2; i++)  {
     int position = i / (totalLeds*2 / (sensorValue)) - 50;
-    leds.setPixel(transpose(i), colorcycle[(position % 3)]);
+    leds.setPixel(transpose(i-totalLeds), colorcycle[(position % 3)]);
 //      leds.setPixel(i,red);
   }
 

@@ -1,4 +1,38 @@
+#define USE_OCTOWS2811
+
+#include <bitswap.h>
+#include <chipsets.h>
+#include <color.h>
+#include <colorpalettes.h>
+#include <colorutils.h>
+#include <controller.h>
+#include <dmx.h>
+#include <FastLED.h>
+#include <fastled_config.h>
+#include <fastled_delay.h>
+#include <fastled_progmem.h>
+#include <fastpin.h>
+#include <fastspi.h>
+#include <fastspi_bitbang.h>
+#include <fastspi_dma.h>
+#include <fastspi_nop.h>
+#include <fastspi_ref.h>
+#include <fastspi_types.h>
+#include <hsv2rgb.h>
+#include <led_sysdefs.h>
+#include <lib8tion.h>
+#include <noise.h>
+#include <pixeltypes.h>
+#include <platforms.h>
+#include <power_mgt.h>
+
 #include <OctoWS2811.h>
+
+#define NUM_LEDS_PER_STRIP 900
+#define NUM_STRIPS 8
+#define NUM_LEDS NUM_STRIPS * NUM_LEDS_PER_STRIP
+
+CRGB leds[NUM_LEDS];
 
 const int red = 0x115533;
 const int yellow = 0x111122;
@@ -21,8 +55,7 @@ OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config);
 void setup()  {                
   Serial.begin(38400);
 
-  leds.begin();
-  leds.show();
+  LEDS.addLeds<OCTOWS2811>(leds, NUM_LEDS_PER_STRIP);
 }
 
 void loop()  {
@@ -30,12 +63,12 @@ void loop()  {
 //  float sensorValue = analogRead(A9)/10.0f;
   
   for (int i=0; i<=totalLeds; i++)  {
-    int position = i / (totalLeds*2 / (sensorValue)) - 50;
+    int position = i / (totalLeds / (sensorValue)) - 50;
     leds.setPixel(transpose(i), colorcycle[(position % 3)]);
 //      leds.setPixel(i,red);
   }
 
-  leds.show();
+  LEDS.show();
 
   Serial.println(sensorValue);
 }
