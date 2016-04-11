@@ -26,7 +26,7 @@ void setup()  {
 }
 
 void loop()  {
-  float sensorValue = 50 * (sin(millis() / 4000.0f) + 1);
+  float sensorValue = 50 * (sin(millis() / 2000.0f) + 1);
 //  float sensorValue = analogRead(A9)/10.0f;
   
   for (int i=0; i<=totalLeds; i++)  {
