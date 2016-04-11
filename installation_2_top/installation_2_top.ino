@@ -1,7 +1,7 @@
 #include <OctoWS2811.h>
 
 const int red = 0x115533;
-const int yellow = 0x111122;
+const int yellow = 0x220000;
 const int blue = 0x000000;
 
 const int stripLength = 150;
