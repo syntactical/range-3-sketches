@@ -1,7 +1,7 @@
 #include <OctoWS2811.h>
 
-const int red = 0x115533;
-const int yellow = 0x111122;
+const int red = 0x110000;
+const int yellow = 0xddddff;
 const int blue = 0x000000;
 
 const int stripLength = 150;
@@ -12,6 +12,8 @@ int colorcycle[] = {red, yellow, blue};
 
 DMAMEM int displayMemory[ledsPerStrip*6];
 int drawingMemory[ledsPerStrip*6];
+
+int entropy[totalLeds] = { };
 
 const int config = WS2811_GRB | WS2811_800kHz;
 const int analogPin = A9;
@@ -26,13 +28,12 @@ void setup()  {
 }
 
 void loop()  {
-  float sensorValue = 50 * (sin(millis() / 4000.0f) + 1);
+  float sensorValue = 50 * (sin(millis() / 2000.0f) + 1);
 //  float sensorValue = analogRead(A9)/10.0f;
-  
-  for (int i=totalLeds; i<=totalLeds*2; i++)  {
+
+  for (int i=0; i<=totalLeds; i++)  {
     int position = i / (totalLeds*2 / (sensorValue)) - 50;
-    leds.setPixel(transpose(i-totalLeds), colorcycle[(position % 3)]);
-//      leds.setPixel(i,red);
+    leds.setPixel(transpose(i), colorcycle[(position % 3)]);
   }
 
   leds.show();
