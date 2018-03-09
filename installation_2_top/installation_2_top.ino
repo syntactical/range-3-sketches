@@ -13,10 +13,7 @@ int colorcycle[] = {red, yellow, blue};
 DMAMEM int displayMemory[ledsPerStrip*6];
 int drawingMemory[ledsPerStrip*6];
 
-int entropy[totalLeds] = { };
-
 const int config = WS2811_GRB | WS2811_800kHz;
-const int analogPin = A9;
 
 OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config);
 
@@ -28,21 +25,14 @@ void setup()  {
 }
 
 void loop()  {
-  float sensorValue = 50 * (sin(millis() / 2000.0f) + 1);
-//  float sensorValue = analogRead(A9)/10.0f;
+  float counter = 50 * (sin(millis() / 2000.0f) + 1);
 
   for (int i=0; i<=totalLeds; i++)  {
-    int position = i / (totalLeds*2 / (sensorValue)) - 50;
-    leds.setPixel(transpose(i), colorcycle[(position % 3)]);
+    int segment = i / (totalLeds*2 / (counter)) - 50;
+    leds.setPixel(transpose(i), colorcycle[(segment % 3)]);
   }
 
   leds.show();
-
-  Serial.println(sensorValue);
-}
-
-inline float clamp(float x, float a, float b){
-    return x < a ? a : (x > b ? b : x);
 }
 
 inline int transpose(int position){

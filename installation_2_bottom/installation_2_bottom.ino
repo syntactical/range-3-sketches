@@ -1,7 +1,5 @@
 #include <OctoWS2811.h>
 
-bool flipped = false;
-
 const int red = 0x110000;
 const int yellow = 0xddddff;
 const int blue = 0x000000;
@@ -16,7 +14,6 @@ DMAMEM int displayMemory[ledsPerStrip*6];
 int drawingMemory[ledsPerStrip*6];
 
 const int config = WS2811_GRB | WS2811_800kHz;
-const int analogPin = A9;
 
 OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config);
 
@@ -28,32 +25,14 @@ void setup()  {
 }
 
 void loop()  {
-  float sensorValue = 50 * (sin(millis() / 2000.0f) + 1);
-//  float sensorValue = analogRead(A9)/10.0f;
+  float counter = 50 * (sin(millis() / 2000.0f) + 1);
 
-  if (random(100) < 2) {
-    flipped = !flipped;
+  for (int i=totalLeds; i<=totalLeds*2; i++)  {
+    int segment = i / (totalLeds*2 / (counter)) - 50;
+    leds.setPixel(transpose(i-totalLeds), colorcycle[(segment % 3)]);
   }
-
-//  if (flipped) {
-    for (int i=totalLeds; i<=totalLeds*2; i++)  {
-      int position = i / (totalLeds*2 / (sensorValue)) - 50;
-      leds.setPixel(transpose(i-totalLeds), colorcycle[(position % 3)]);
-    }
-//  } else {
-//    for (int i=0; i<=totalLeds; i++)  {
-//      int position = i / (totalLeds*2 / (sensorValue)) - 50;
-//      leds.setPixel(transpose(i), colorcycle[(position % 3)]);
-//    }
-//  }
   
   leds.show();
-
-  Serial.println(analogRead(A9));
-}
-
-inline float clamp(float x, float a, float b){
-    return x < a ? a : (x > b ? b : x);
 }
 
 inline int transpose(int position){
